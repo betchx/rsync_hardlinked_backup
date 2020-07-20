@@ -1,0 +1,6 @@
+backup_*/
+logs/
+*backup_20*/
+DriveUsed.log
+exclude.txt
+include.txt
