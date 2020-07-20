@@ -19,21 +19,32 @@ rem   同日に複数回実行した場合に対応できる様にした（つもり）
 
 rem 設定セクション ============================================================
 
-rem バックアップ対象フォルダ，ファイル
-rem msys形式のフルパスでスペース区切り 最後にスラッシュはつけないほうが良い．
-rem パスにスペースが含まれる場合はクォートする
-set TARGETS=/C
+rem バックアップ対象フォルダ，ファイルを記入したファイルを指定．
+rem msys形式のフルパスで改行区切り
+rem 最後にスラッシュはつけないほうが良い．
+rem パスにスペースが含まれる場合はクォートする必要があるかもしれない．
+set TARGETLIST=%~dp0targets.txt
 
-
-rem 除外設定
+rem 除外設定等の記入されたファイルを指定する．
 set EXCLUDE=--exclude-from=%~pd0exclude.txt
-
 set INCLUDE=--include-from=%~pd0include.txt
 
 rem rsync.exeへのパス．通常はMSYSインストールディレクトリの usr\bin
 set RSYNCPATH=c:\msys64\usr\bin
 
 rem 設定終わり ================================================================
+
+
+set TARGETS=
+setlocal EnableDelayedExpansion
+for /F "eol=#"  %%I in (%TARGETLIST%) do set TARGETS=!TARGETS! %%I
+setlocal DisableDelayedExpansion
+
+echo Backup from:%TARGETS%
+if "%TARGETS%"=="" (
+  echo Add backup target folders into %TARGETLIST%.
+  goto :EOF
+)
 
 
 rem rsync.exeのチェック
@@ -80,7 +91,11 @@ rem ログファイル名
 set LOGFILE=%~pd0\DriveUsed.log
 
 rem オプション
-set OPT=-avh --log-file=%BASEDIR%logs/rsync_%DD%.log --no-links %EXCLUDE% %INCLUDE%
+rem a: arghive アーカイブモード（「-rlptgoD -no-H -no-A -no-X」相当） 〇再帰，シムリンク，パーミッション，時間，グループ，所有者，デバイス ×ハードリンク，ACL, 拡張属性
+rem v: verbose 経過表示
+rem h: human readable 人が読みやすく表示
+rem c: checksum 更新日時とサイズではなく，チェックサムで比較する．
+set OPT=-avhc  --log-file=%BASEDIR%logs/rsync_%DD%.log --no-links %EXCLUDE% %INCLUDE%
 
 rem ログフォルダがない場合は作成する．
 if not exist logs mkdir logs

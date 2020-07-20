@@ -4,3 +4,4 @@ logs/
 DriveUsed.log
 exclude.txt
 include.txt
+targets.txt
