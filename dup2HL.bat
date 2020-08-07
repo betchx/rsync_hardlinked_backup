@@ -20,7 +20,7 @@ rem ƒ‹[ƒv‚Åã‘‚«‚³‚ê‚é‚±‚Æ‚ğ—˜—p
 setlocal EnableDelayedExpansion
 set PREVIOUS=
 set LATESTBKUP=
-for /F "usebackq" %%I in (`dir /AD /B /ON backup_*`) do (
+for /F "usebackq" %%I in (`dir /AD /B /ON *_20??-??-??`) do (
 set PREVIOUS=!LATESTBKUP!
 set LATESTBKUP=%%I
 )

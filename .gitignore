@@ -1,6 +1,6 @@
 backup_*/
 logs/
-*backup_20*/
+*_20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
 DriveUsed.log
 exclude.txt
 include.txt

@@ -32,12 +32,25 @@ set INCLUDE=--include-from=%~pd0include.txt
 rem rsync.exeへのパス．通常はMSYSインストールディレクトリの usr\bin
 set RSYNCPATH=c:\msys64\usr\bin
 
+rem 保存フォルダのプレフィックス
+rem 通常は backup
+set PREFIX=backup
+
 rem 設定終わり ================================================================
 
 
 set TARGETS=
 setlocal EnableDelayedExpansion
 for /F "eol=#"  %%I in (%TARGETLIST%) do set TARGETS=!TARGETS! %%I
+
+rem 直近とその直前のバックアップのディレクトリ名を取得
+rem ループで上書きされることを利用
+set PREVIOUS=
+set LATESTBKUP=
+for /F "usebackq" %%I in (`dir /AD /B /ON %PREFIX%_20??-??-??`) do (
+set PREVIOUS=!LATESTBKUP!
+set LATESTBKUP=%%I
+)
 setlocal DisableDelayedExpansion
 
 echo Backup from:%TARGETS%
@@ -73,16 +86,7 @@ rem 日付を習得
 set DD=%DATE:/=-%
 
 rem バックアップ先
-set DEST=%BASEDIR%backup_%DD%
-
-rem 直近とその直前のバックアップのディレクトリ名を取得
-rem ループで上書きされることを利用
-set PREVIOUS=
-set LATESTBKUP=
-for /F "usebackq" %%I in (`dir /AD /B /ON backup_*`) do (
-set PREVIOUS=%LATESTBKUP%
-set LATESTBKUP=%%I
-)
+set DEST=%BASEDIR%%PREFIX%_%DD%
 
 rem rsyncのパスを設定
 set PATH=%RSYNCPATH%;%PATH%
@@ -110,7 +114,7 @@ rem 初回実行の確認
 if "%LATESTBKUP%" == "" goto :FIRST
 
 rem 当日再実行の確認
-if "%LATESTBKUP%" == "backup_%DD%" goto :MULTI_RUN
+if "%LATESTBKUP%" == "%PREFIX%_%DD%" goto :MULTI_RUN
 
 rem 増分バックアップ
 echo %LATESTBKUP%からの差分バックアップ
