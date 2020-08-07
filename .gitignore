@@ -5,3 +5,6 @@ DriveUsed.log
 exclude.txt
 include.txt
 targets.txt
+*Dup2HardLink*.bat
+*Dup2HardLink*.bat.txt
+Dup2HL-FileList.csv

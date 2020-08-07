@@ -1,1 +1,2 @@
 bup.bat encoding=Shift-JIS
+dup-to-hard-link.rb encoding=UTF-8
